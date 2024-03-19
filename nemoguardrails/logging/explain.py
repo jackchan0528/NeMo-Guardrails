@@ -74,6 +74,7 @@ class ExplainInfo(BaseModel):
 
     def print_llm_calls_summary(self):
         """Helper to print a quick overview of the LLM calls that were made."""
+        print("self.llm_calls: ", self.llm_calls)
 
         if len(self.llm_calls) == 0:
             print("No LLM calls were made.")

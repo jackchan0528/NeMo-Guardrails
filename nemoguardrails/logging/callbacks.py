@@ -34,6 +34,9 @@ log = logging.getLogger(__name__)
 
 class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
     """Async callback handler that can be used to handle callbacks from langchain."""
+    print("Jack is entering the LoggingCallbackHandler() function now! ...")
+
+
 
     async def on_llm_start(
         self,
@@ -47,13 +50,17 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         """Run when LLM starts running."""
         # We initialize a new LLM call if we don't have one already. This can happen
         # when a chain is used directly.
+        print("Jack is debugging at on_llm_start() ...")
         llm_call_info = llm_call_info_var.get()
         if llm_call_info is None:
             llm_call_info = LLMCallInfo()
             llm_call_info_var.set(llm_call_info)
+        print("llm_call_info: ", llm_call_info)
+        print("llm_call_info_var", llm_call_info_var)
 
         # We also add it to the explain object
         explain_info = explain_info_var.get()
+        print("explain_info: ", explain_info)
         if explain_info:
             explain_info.llm_calls.append(llm_call_info)
 
@@ -80,9 +87,15 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         **kwargs: Any,
     ) -> Any:
         """Run when a chat model starts running."""
+        # print("Jack is debugging at on_chat_model_start() ...")
+        # print("The messages are: ", messages)
+        # for msg in messages[0]:
+        #     print(type(msg.content))  # Should be <class 'str'>
+
         # We initialize a new LLM call if we don't have one already. This can happen
         # when a chain is used directly.
         llm_call_info = llm_call_info_var.get()
+        print("llm_call_info: ", llm_call_info)
         if llm_call_info is None:
             llm_call_info = LLMCallInfo()
             llm_call_info_var.set(llm_call_info)
@@ -114,6 +127,7 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         llm_call_info.started_at = time()
 
         llm_stats = llm_stats_var.get()
+        print("llm_stats: ", llm_stats)
         if llm_stats is None:
             llm_stats = LLMStats()
             llm_stats_var.set(llm_stats)
@@ -181,7 +195,10 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
 
         # Finally, we append the LLM call log to the processing log
         processing_log = processing_log_var.get()
+        print("Entering processing_log if-statement")
+        print("processing_log: ", processing_log)
         if processing_log:
+            print("processing_log is not empty")
             processing_log.append(
                 {"type": "llm_call_info", "timestamp": time(), "data": llm_call_info}
             )
