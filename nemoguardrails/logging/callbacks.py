@@ -121,6 +121,8 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
             + Styles.RESET_ALL
         )
 
+        print("prompt: ", prompt)
+
         log.info("Invocation Params :: %s", kwargs.get("invocation_params", {}))
         log.info("Prompt Messages :: %s", prompt)
         llm_call_info.prompt = prompt
@@ -129,10 +131,12 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         llm_stats = llm_stats_var.get()
         print("llm_stats: ", llm_stats)
         if llm_stats is None:
+            print("llm_stats is None")
             llm_stats = LLMStats()
             llm_stats_var.set(llm_stats)
 
         llm_stats.inc("total_calls")
+        print("llm_stats after inc: ", llm_stats)
 
     async def on_llm(self, *args, **kwargs) -> Any:
         """NOTE: this needs to be implemented to avoid a warning by LangChain."""
@@ -157,6 +161,7 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         **kwargs: Any,
     ) -> None:
         """Run when LLM ends running."""
+        print("Jack is debugging at on_llm_end() ...")
         log.info("Completion :: %s", response.generations[0][0].text)
         llm_call_info = llm_call_info_var.get()
         if llm_call_info is None:
@@ -181,6 +186,7 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
         llm_stats.inc("total_time", took)
         llm_call_info.duration = took
 
+
         # Update the token usage stats as well
         if response.llm_output:
             token_usage = response.llm_output.get("token_usage", {})
@@ -192,6 +198,10 @@ class LoggingCallbackHandler(AsyncCallbackHandler, StdOutCallbackHandler):
                 "total_completion_tokens", token_usage.get("completion_tokens", 0)
             )
             llm_call_info.completion_tokens = token_usage.get("completion_tokens", 0)
+
+
+        print("llm_stats after on_llm_end() get(): ", llm_stats)
+        print("llm_call_info after on_llm_end() get(): ", llm_call_info)
 
         # Finally, we append the LLM call log to the processing log
         processing_log = processing_log_var.get()
